@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Apex Finance</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="theme-switch.js" defer></script>
+    <script src="landscape-grid.js" defer></script>
+    <script src="language-switch.js" defer></script>
+    <script src="calculator.js" defer></script>
+    <script src="scroll-reveal.js" defer></script>
+  </head>
+  <body>
+    <canvas class="grid-landscape" aria-hidden="true"></canvas>
+
+    <header class="site-header reveal">
+      <a class="brand" href="#top" aria-label="Apex home">
+        <img src="Apex_logo_APEX_black.svg" alt="Apex">
+      </a>
+      <div class="header-center">
+        <nav class="nav" aria-label="Main navigation">
+          <a href="#solutions" data-i18n="nav.solutions">Решения</a>
+          <a href="#calculator" data-i18n="nav.calculator">Калькулятор</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="theme-switch" aria-label="Design theme switch">
+          <button class="theme-button is-active" type="button" data-theme="warm">Warm</button>
+          <button class="theme-button" type="button" data-theme="mist">Mist</button>
+          <button class="theme-button" type="button" data-theme="dark">Dark</button>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="language-switch" aria-label="Language switch">
+          <button class="lang-button" type="button" data-lang="ru">RU</button>
+          <button class="lang-button is-active" type="button" data-lang="en">EN</button>
+        </div>
+        <a class="button button-small" href="#signup" data-i18n="cta.getStarted">Начать</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero section">
+        <div class="hero-copy reveal">
+          <h1><span data-i18n="hero.title">Современные инвестиции.</span><span data-i18n="hero.subtitle">Высокая доходность. Безопасно. Просто.</span></h1>
+          <a class="button" href="#signup" data-i18n="cta.getStarted">Начать</a>
+        </div>
+      </section>
+
+      <section class="stats section" aria-label="Apex statistics">
+        <div class="stat reveal">
+          <strong>>150</strong>
+          <span data-i18n="stats.investors">Активных инвесторов</span>
+        </div>
+        <div class="stat reveal">
+          <strong>65%</strong>
+          <span data-i18n="stats.margin">Средняя маржинальность</span>
+        </div>
+        <div class="stat reveal">
+          <strong>7M$</strong>
+          <span data-i18n="stats.funds">Общий капитал</span>
+        </div>
+      </section>
+
+      <section id="solutions" class="features section">
+        <article class="feature">
+          <div class="visual visual-world">
+            <img src="img/World2.png" alt="">
+          </div>
+          <h2 data-i18n="solutions.global.title">Доступ к глобальным рынкам.</h2>
+          <p data-i18n="solutions.global.text">Расширяйте инвестиционные возможности за пределами локального рынка через доступ к международным финансовым инструментам.</p>
+        </article>
+        <article class="feature">
+          <div class="visual visual-arbitrage">
+            <img src="img/Arbitrage2.png" alt="">
+          </div>
+          <h2 data-i18n="solutions.arbitrage.title">Арбитражные стратегии.</h2>
+          <p data-i18n="solutions.arbitrage.text">Используйте рыночно-нейтральные арбитражные возможности, рассчитанные на стабильную доходность при контролируемом уровне риска.</p>
+        </article>
+        <article class="feature">
+          <div class="visual visual-security">
+            <img src="img/Security2.png" alt="">
+          </div>
+          <h2 data-i18n="solutions.security.title">Высокий уровень защиты.</h2>
+          <p data-i18n="solutions.security.text">Ваш капитал защищен системой риск-менеджмента, прозрачными операционными процессами и строгими стандартами контроля.</p>
+        </article>
+      </section>
+
+      <section id="calculator" class="calculator section">
+        <div class="calculator-widget" aria-label="Investment profit calculator">
+          <div class="calculator-controls">
+            <div>
+              <h2 data-i18n="calculator.title">Калькулятор доходности</h2>
+              <p data-i18n="calculator.text">Распределите инвестиции между RUB и USD и сразу посмотрите потенциальный результат.</p>
+            </div>
+
+            <label class="field">
+              <span data-i18n="calculator.investment">Инвестиции, RUB</span>
+              <input data-calc="amount" type="text" inputmode="numeric" autocomplete="off" value="1 000 000">
+            </label>
+
+            <label class="field">
+              <span data-i18n="calculator.usdShare">Доля USD</span>
+              <input data-calc="usdShare" type="range" min="0" max="100" step="5" value="40">
+              <strong data-output="usdShare">40%</strong>
+            </label>
+            <div class="allocation-summary" aria-live="polite">
+              <div>
+                <span data-i18n="calculator.rubAmount">Сумма в RUB</span>
+                <strong data-output="rubAllocation">0 RUB</strong>
+              </div>
+              <div>
+                <span data-i18n="calculator.usdAmount">Сумма в USD</span>
+                <strong data-output="usdAllocation">0 USD</strong>
+              </div>
+            </div>
+
+            <label class="field">
+              <span data-i18n="calculator.years">Срок</span>
+              <input data-calc="years" type="range" min="1" max="20" step="1" value="5">
+              <strong data-output="years">5 years</strong>
+            </label>
+            <small class="rate-note" data-output="rateNote" data-i18n="calculator.loadingRate">Загрузка курса USD/RUB...</small>
+          </div>
+
+          <div class="calculator-results">
+            <div class="result-main">
+              <span data-i18n="calculator.totalLabel">Итоговая стоимость в RUB за весь период после комиссии</span>
+              <strong data-output="totalValue">0 RUB</strong>
+            </div>
+            <div class="result-grid">
+              <div>
+                <span data-i18n="calculator.wholeProfit">Прибыль за весь период</span>
+                <strong data-output="wholeProfit">+0 RUB</strong>
+              </div>
+              <div>
+                <span data-i18n="calculator.annualProfit">Годовая прибыль в RUB</span>
+                <strong data-output="annualProfit">0 RUB</strong>
+              </div>
+            </div>
+            <div>
+              <canvas class="growth-chart" width="720" height="260" aria-label="Profit breakdown bar chart"></canvas>
+              <small class="chart-note" data-output="chartNote">средн. доходность RUB после комиссии: 30%; средн. доходность USD после комиссии: 20%; плановый рост FX: +8%/год</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="testimonials section">
+        <div class="section-heading">
+          <h2><span data-i18n="testimonials.title">Нам доверяют инвесторы.</span><span data-i18n="testimonials.subtitle">Что говорят наши клиенты.</span></h2>
+        </div>
+        <div class="quote-grid">
+          <article class="quote-card">
+            <p data-i18n="testimonials.one.text">&ldquo;Я вложил средства без лишней сложности. Процесс был понятным и безопасным, а доход теперь поступает регулярно.&rdquo;</p>
+            <div>
+              <strong data-i18n="testimonials.one.name">Алексей М.</strong>
+              <span data-i18n="testimonials.one.role">Частный инвестор</span>
+            </div>
+          </article>
+          <article class="quote-card">
+            <p data-i18n="testimonials.two.text">&ldquo;Apex помог легко распределить капитал между RUB и USD. Я понимаю, где находятся мои средства и как они работают.&rdquo;</p>
+            <div>
+              <strong data-i18n="testimonials.two.name">Мария С.</strong>
+              <span data-i18n="testimonials.two.role">Портфельный клиент</span>
+            </div>
+          </article>
+          <article class="quote-card">
+            <p data-i18n="testimonials.three.text">&ldquo;Контроль рисков дал мне уверенность начать. Подключение прошло просто, а регулярный доход стал частью моего финансового плана.&rdquo;</p>
+            <div>
+              <strong data-i18n="testimonials.three.name">Дмитрий К.</strong>
+              <span data-i18n="testimonials.three.role">Долгосрочный инвестор</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="signup" class="signup section">
+        <div class="section-heading">
+          <h2><span data-i18n="signup.title">Начните инвестировать.</span><span data-i18n="signup.subtitle">Получите консультацию и все условия.</span></h2>
+        </div>
+        <form class="signup-form">
+          <label class="sr-only" for="name">Name</label>
+          <input id="name" type="text" placeholder="Имя" autocomplete="name" data-i18n-placeholder="form.name">
+          <label class="sr-only" for="email">E-mail</label>
+          <input id="email" type="email" placeholder="e-mail" autocomplete="email">
+          <label class="sr-only" for="phone">Phone</label>
+          <input id="phone" type="tel" placeholder="Телефон" autocomplete="tel" data-i18n-placeholder="form.phone">
+          <button class="button" type="submit" data-i18n="form.button">Начать инвестировать</button>
+        </form>
+      </section>
+
+      <section id="faq" class="faq section">
+        <details>
+          <summary data-i18n="faq.one.question">Как оформляется инвестирование?</summary>
+          <p data-i18n="faq.one.answer">Инвестирование оформляется через открытие брокерского счета на ваше имя. После этого управляющим Apex предоставляется доступ к управлению счетом в рамках согласованного инвестиционного мандата.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.two.question">Есть ли гарантии доходности?</summary>
+          <p data-i18n="faq.two.answer">Нет. Доходность не гарантируется и зависит от рыночной конъюнктуры. В калькуляторе показана потенциальная доходность на основе предыдущих периодов, она не является обещанием будущего дохода.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.three.question">Нужно ли платить налоги с дохода?</summary>
+          <p data-i18n="faq.three.answer">Налог с полученного дохода будет удержан автоматически вашим брокером согласно применимым правилам.</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="Apex_logo_APEX_black.svg" alt="Apex">
+      <div class="footer-links">
+        <div>
+          <h3 data-i18n="footer.company">Компания</h3>
+          <a href="#" data-i18n="footer.about">О нас</a>
+          <a href="#" data-i18n="footer.careers">Карьера</a>
+          <a href="#" data-i18n="footer.blog">Блог</a>
+        </div>
+        <div>
+          <h3 data-i18n="footer.products">Продукты</h3>
+          <a href="#" data-i18n="footer.features">Возможности</a>
+          <a href="#faq">FAQ</a>
+          <a href="#" data-i18n="footer.calculator">Калькулятор</a>
+        </div>
+        <div>
+          <h3 data-i18n="footer.support">Поддержка</h3>
+          <a href="#" data-i18n="footer.help">Помощь</a>
+          <a href="#" data-i18n="footer.terms">Условия</a>
+          <a href="#" data-i18n="footer.privacy">Конфиденциальность</a>
+        </div>
+        <div>
+          <h3 data-i18n="footer.contact">Контакты</h3>
+          <a href="#" data-i18n="footer.partners">Партнеры</a>
+          <a href="#" data-i18n="footer.press">Пресса</a>
+          <a href="#" data-i18n="footer.contactUs">Связаться</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
