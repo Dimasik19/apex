@@ -1,43 +1,20 @@
 <!doctype html>
-<html lang="en" data-theme="mist">
+<html lang="ru" data-theme="mist">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Apex Finance - Investment Dashboard</title>
+    <title>Apex Capital Chart</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="theme-switch.js" defer></script>
-    <script src="landscape-grid.js" defer></script>
     <style>
-      .dashboard-page {
-        padding: 34px 0 70px;
+      body {
+        min-height: 100vh;
+        padding: 28px;
       }
 
-      .dashboard-heading {
-        display: grid;
-        gap: 8px;
-        width: min(var(--max), calc(100% - 72px));
-        margin: 0 auto 18px;
-      }
-
-      .dashboard-heading h1 {
-        margin: 0;
-        color: var(--text);
-        font-size: clamp(34px, 5vw, 64px);
-        line-height: 0.98;
-        font-weight: 900;
-      }
-
-      .dashboard-heading p {
-        max-width: 680px;
-        margin: 0;
-        color: var(--muted);
-        font-size: 18px;
-        line-height: 1.55;
-        font-weight: 600;
-      }
-
-      .dashboard-frame-wrap {
-        width: min(1000px, calc(100% - 72px));
+      .dashboard-only {
+        position: relative;
+        z-index: 1;
+        width: min(1000px, 100%);
         margin: 0 auto;
         border: 1px solid var(--line);
         border-radius: 8px;
@@ -49,39 +26,18 @@
       .dashboard-frame {
         display: block;
         width: 100%;
-        height: 870px;
+        height: 900px;
         border: 0;
         background: transparent;
       }
 
-      .dashboard-actions {
-        display: flex;
-        justify-content: center;
-        width: min(var(--max), calc(100% - 72px));
-        margin: 20px auto 0;
-      }
-
       @media (max-width: 760px) {
-        .dashboard-page {
-          padding-top: 22px;
-        }
-
-        .dashboard-heading,
-        .dashboard-frame-wrap,
-        .dashboard-actions {
-          width: calc(100% - 28px);
-        }
-
-        .dashboard-heading h1 {
-          font-size: 34px;
-        }
-
-        .dashboard-heading p {
-          font-size: 15px;
+        body {
+          padding: 14px;
         }
 
         .dashboard-frame {
-          height: 1220px;
+          height: 1560px;
         }
       }
     </style>
@@ -89,64 +45,16 @@
   <body>
     <canvas class="grid-landscape" aria-hidden="true"></canvas>
 
-    <header class="site-header">
-      <a class="brand" href="index.html#top" aria-label="Apex home">
-        <img src="Apex_logo_APEX_black.svg" alt="Apex">
-      </a>
-      <div class="header-center">
-        <nav class="nav" aria-label="Main navigation">
-          <a href="index.html#solutions">Решения</a>
-          <a href="index.html#calculator">Калькулятор</a>
-          <a href="dashboard.html">Dashboard</a>
-          <a href="index.html#faq">FAQ</a>
-        </nav>
-        <div class="theme-switch" aria-label="Design theme switch">
-          <button class="theme-button" type="button" data-theme="warm">Warm</button>
-          <button class="theme-button is-active" type="button" data-theme="mist">Mist</button>
-          <button class="theme-button" type="button" data-theme="dark">Dark</button>
-        </div>
-      </div>
-      <div class="header-actions">
-        <a class="button button-small" href="index.html#signup">Начать</a>
-      </div>
-    </header>
-
-    <main class="dashboard-page">
-      <section class="dashboard-heading">
-        <h1>Investment Dashboard</h1>
-        <p>Демо-страница Apex с динамикой капитала, дневным выбором периода и помесячной структурой доходности.</p>
-      </section>
-
-      <section class="dashboard-frame-wrap" aria-label="Investment capital dashboard">
-        <iframe
-          class="dashboard-frame"
-          src="graph/investment_capital_dashboard.html"
-          title="Investment capital dashboard"
-          loading="eager"
-        ></iframe>
-      </section>
-
-      <div class="dashboard-actions">
-        <a class="button" href="index.html#signup">Получить консультацию</a>
-      </div>
+    <main class="dashboard-only" aria-label="Apex capital chart">
+      <iframe
+        class="dashboard-frame"
+        src="graph/investment_capital_dashboard.html"
+        title="Apex capital chart"
+        loading="eager"
+        scrolling="no"
+      ></iframe>
     </main>
 
-    <footer class="footer">
-      <img src="Apex_logo_APEX_black.svg" alt="Apex">
-      <div class="footer-links">
-        <div>
-          <h3>Компания</h3>
-          <a href="index.html#solutions">Решения</a>
-          <a href="dashboard.html">Dashboard</a>
-          <a href="index.html#faq">FAQ</a>
-        </div>
-        <div>
-          <h3>Продукты</h3>
-          <a href="index.html#calculator">Калькулятор</a>
-          <a href="index.html#signup">Консультация</a>
-          <a href="index.html#top">Главная</a>
-        </div>
-      </div>
-    </footer>
+    <script src="landscape-grid.js"></script>
   </body>
 </html>
