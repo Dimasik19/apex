@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Apex Palette Preview</title>
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 34px;
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: #25313d;
+        background: #f4f7fa;
+      }
+
+      .page {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(34px, 5vw, 62px);
+        line-height: 1;
+        font-weight: 900;
+      }
+
+      .intro {
+        max-width: 720px;
+        margin: 0 0 28px;
+        color: rgba(37, 49, 61, 0.58);
+        font-size: 18px;
+        line-height: 1.5;
+        font-weight: 700;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .palette {
+        --background: #f4f7fa;
+        --background-rgb: 244, 247, 250;
+        --sand: #e7edf3;
+        --stone: #aeb9c5;
+        --text: #25313d;
+        --text-rgb: 37, 49, 61;
+        --olive: #9eb6be;
+        --olive-rgb: 158, 182, 190;
+        --gold: #9fb1cf;
+        --gold-rgb: 159, 177, 207;
+        --muted: rgba(37, 49, 61, 0.56);
+        --surface: rgba(231, 237, 243, 0.68);
+        --panel: rgba(231, 237, 243, 0.52);
+        --panel-strong: rgba(248, 250, 252, 0.78);
+        --line: rgba(37, 49, 61, 0.09);
+        --positive: #4d947e;
+        --negative: #c56b5a;
+        --fx: #a58758;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          radial-gradient(circle at 18% 12%, rgba(var(--gold-rgb), 0.2), transparent 34%),
+          radial-gradient(circle at 84% 8%, rgba(var(--olive-rgb), 0.2), transparent 34%),
+          var(--background);
+        box-shadow: 0 22px 56px rgba(var(--text-rgb), 0.08);
+      }
+
+      .palette.glacier {
+        --background: #eef7fb;
+        --background-rgb: 238, 247, 251;
+        --sand: #d9ebf3;
+        --stone: #9bb3c2;
+        --text: #1d3240;
+        --text-rgb: 29, 50, 64;
+        --olive: #7fb7c5;
+        --olive-rgb: 127, 183, 197;
+        --gold: #91aee0;
+        --gold-rgb: 145, 174, 224;
+        --muted: rgba(34, 49, 58, 0.56);
+        --surface: rgba(217, 235, 243, 0.74);
+        --panel: rgba(217, 235, 243, 0.58);
+        --panel-strong: rgba(247, 252, 254, 0.84);
+        --line: rgba(29, 50, 64, 0.11);
+      }
+
+      .palette.pearl {
+        --background: #f6f8f7;
+        --background-rgb: 246, 248, 247;
+        --sand: #e8eeee;
+        --stone: #b2bdc0;
+        --text: #283437;
+        --text-rgb: 40, 52, 55;
+        --olive: #a6beb9;
+        --olive-rgb: 166, 190, 185;
+        --gold: #b2bdd6;
+        --gold-rgb: 178, 189, 214;
+        --muted: rgba(40, 52, 55, 0.56);
+        --surface: rgba(232, 238, 238, 0.7);
+        --panel: rgba(232, 238, 238, 0.54);
+        --panel-strong: rgba(250, 252, 251, 0.8);
+        --line: rgba(40, 52, 55, 0.09);
+      }
+
+      .inner {
+        display: grid;
+        gap: 16px;
+        padding: 18px;
+      }
+
+      .top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .name {
+        margin: 0;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      .note {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+
+      .button {
+        min-height: 34px;
+        padding: 0 14px;
+        border: 1px solid rgba(var(--gold-rgb), 0.32);
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--background);
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric {
+        min-height: 82px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .metric span {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .metric strong {
+        color: var(--text);
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .metric .positive { color: var(--positive); }
+
+      .chart {
+        height: 150px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.32);
+      }
+
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+
+      .swatch {
+        height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .caption {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      @media (max-width: 940px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 520px) {
+        body { padding: 18px; }
+        .top { flex-direction: column; }
+        .metrics { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <h1>Apex Palette Preview</h1>
+      <p class="intro">Три близкие холодные палитры для сравнения: текущий Mist и два соседних варианта с тем же тихим финансовым характером.</p>
+
+      <section class="grid">
+        <article class="palette">
+          <div class="inner">
+            <div class="top">
+              <div>
+                <h2 class="name">Mist</h2>
+                <p class="note">Текущий вариант: чистый, светлый, нейтрально-технологичный.</p>
+              </div>
+              <button class="button" type="button">Active</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span>Капитал</span><strong>₽2.24 м</strong></div>
+              <div class="metric"><span>Доходность</span><strong class="positive">+23.25%</strong></div>
+            </div>
+            <div class="chart">
+              <svg viewBox="0 0 320 130" aria-hidden="true">
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16 L320 130 L0 130 Z" fill="rgba(158,182,190,.22)"/>
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16" fill="none" stroke="var(--olive)" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="swatches">
+              <span class="swatch" style="background:var(--background)"></span>
+              <span class="swatch" style="background:var(--sand)"></span>
+              <span class="swatch" style="background:var(--olive)"></span>
+              <span class="swatch" style="background:var(--gold)"></span>
+              <span class="swatch" style="background:var(--text)"></span>
+            </div>
+            <div class="caption">#f4f7fa · #e7edf3 · #9eb6be · #9fb1cf · #25313d</div>
+          </div>
+        </article>
+
+        <article class="palette glacier">
+          <div class="inner">
+            <div class="top">
+              <div>
+                <h2 class="name">Glacier</h2>
+                <p class="note">Заметно холоднее: ледяной cyan, чище фон и более уверенный blue-акцент.</p>
+              </div>
+              <button class="button" type="button">Active</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span>Капитал</span><strong>₽2.24 м</strong></div>
+              <div class="metric"><span>Доходность</span><strong class="positive">+23.25%</strong></div>
+            </div>
+            <div class="chart">
+              <svg viewBox="0 0 320 130" aria-hidden="true">
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16 L320 130 L0 130 Z" fill="rgba(149,184,189,.22)"/>
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16" fill="none" stroke="var(--olive)" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="swatches">
+              <span class="swatch" style="background:var(--background)"></span>
+              <span class="swatch" style="background:var(--sand)"></span>
+              <span class="swatch" style="background:var(--olive)"></span>
+              <span class="swatch" style="background:var(--gold)"></span>
+              <span class="swatch" style="background:var(--text)"></span>
+            </div>
+              <div class="caption">#eef7fb · #d9ebf3 · #7fb7c5 · #91aee0 · #1d3240</div>
+          </div>
+        </article>
+
+        <article class="palette pearl">
+          <div class="inner">
+            <div class="top">
+              <div>
+                <h2 class="name">Pearl</h2>
+                <p class="note">Мягче и теплее: больше минерального серо-зеленого оттенка.</p>
+              </div>
+              <button class="button" type="button">Active</button>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span>Капитал</span><strong>₽2.24 м</strong></div>
+              <div class="metric"><span>Доходность</span><strong class="positive">+23.25%</strong></div>
+            </div>
+            <div class="chart">
+              <svg viewBox="0 0 320 130" aria-hidden="true">
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16 L320 130 L0 130 Z" fill="rgba(166,190,185,.22)"/>
+                <path d="M0 112 C42 105 50 82 84 82 S124 72 154 55 S195 64 224 42 S270 25 320 16" fill="none" stroke="var(--olive)" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="swatches">
+              <span class="swatch" style="background:var(--background)"></span>
+              <span class="swatch" style="background:var(--sand)"></span>
+              <span class="swatch" style="background:var(--olive)"></span>
+              <span class="swatch" style="background:var(--gold)"></span>
+              <span class="swatch" style="background:var(--text)"></span>
+            </div>
+            <div class="caption">#f6f8f7 · #e8eeee · #a6beb9 · #b2bdd6 · #283437</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

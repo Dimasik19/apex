@@ -14,5 +14,5 @@
     button.addEventListener("click", () => applyTheme(button.dataset.theme));
   });
 
-  applyTheme("warm");
+  applyTheme(document.documentElement.dataset.theme || "warm");
 })();

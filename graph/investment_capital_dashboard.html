@@ -1,0 +1,847 @@
+
+<!doctype html>
+<html lang="ru" data-theme="mist">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Инвестиционный капитал</title>
+<style>
+:root,
+:root[data-theme="mist"] {
+  --background: #f4f7fa;
+  --background-rgb: 244, 247, 250;
+  --sand: #e7edf3;
+  --stone: #aeb9c5;
+  --text: #25313d;
+  --text-rgb: 37, 49, 61;
+  --olive: #9eb6be;
+  --olive-rgb: 158, 182, 190;
+  --gold: #9fb1cf;
+  --gold-rgb: 159, 177, 207;
+  --muted: rgba(37, 49, 61, 0.56);
+  --surface: rgba(231, 237, 243, 0.68);
+  --panel: rgba(231, 237, 243, 0.52);
+  --panel-strong: rgba(248, 250, 252, 0.78);
+  --input-bg: rgba(255, 255, 255, 0.58);
+  --line: rgba(37, 49, 61, 0.09);
+  --shadow: rgba(37, 49, 61, 0.07);
+  --positive: #4d947e;
+  --negative: #c56b5a;
+  --fx: #a58758;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(var(--gold-rgb), 0.18), transparent 28%),
+    radial-gradient(circle at 82% 0%, rgba(var(--olive-rgb), 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(var(--background-rgb), 0.92), var(--background) 64%);
+  color: var(--text);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+  padding: 28px;
+}
+
+button { font: inherit; }
+
+.dash {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-strong);
+  box-shadow: 0 18px 44px var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+.top-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.title-block { display: flex; flex-direction: column; gap: 5px; }
+.title-main { font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: 0.04em; text-transform: uppercase; }
+.title-sub { font-size: 12px; color: var(--muted); }
+
+.currency-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(231, 237, 243, 0.72);
+}
+
+.curr-btn {
+  min-width: 72px;
+  min-height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.curr-btn:hover { color: var(--text); }
+.curr-btn.active { background: var(--gold); color: var(--background); box-shadow: 0 8px 18px rgba(var(--gold-rgb), 0.24); }
+
+.metrics-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.metric { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 13px; }
+.metric-label { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; white-space: nowrap; }
+.metric-value { overflow-wrap: anywhere; font-size: clamp(16px, 2vw, 21px); line-height: 1.12; font-weight: 800; color: var(--text); }
+.metric-delta { min-height: 13px; font-size: 11px; margin-top: 3px; }
+.delta-pos { color: var(--positive); }
+.delta-neg { color: var(--negative); }
+
+.chart-area,
+.chart2-area {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.chart-area { height: 260px; margin-bottom: 10px; padding: 8px 4px 4px; }
+.chart2-area { height: 210px; padding: 8px 4px 4px; }
+
+.selection-info {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sel-badge {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.sel-badge.is-positive {
+  border-color: rgba(77, 148, 126, 0.22);
+  background: rgba(77, 148, 126, 0.12);
+  color: var(--positive);
+}
+
+.sel-badge.is-negative {
+  border-color: rgba(197, 107, 90, 0.24);
+  background: rgba(197, 107, 90, 0.12);
+  color: var(--negative);
+}
+
+.selection-label { color: var(--muted); font-size: 12px; }
+.selection-hint { color: rgba(var(--text-rgb), 0.42); font-size: 11px; }
+.reset-selection {
+  margin-left: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.reset-selection:hover { color: var(--text); }
+.timeframe-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 10px 0 8px;
+}
+
+.timeframe-btn {
+  min-width: 48px;
+  min-height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(231, 237, 243, 0.58);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.timeframe-btn:hover { color: var(--text); }
+.timeframe-btn.active {
+  background: var(--gold);
+  border-color: rgba(var(--gold-rgb), 0.38);
+  color: var(--background);
+}
+
+.divider { width: 100%; height: 1px; background: var(--line); margin-bottom: 18px; }
+.chart2-title { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 12px; }
+.leg-item { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 9px 11px;
+  font-size: 12px;
+  z-index: 10;
+  display: none;
+  min-width: 150px;
+  box-shadow: 0 14px 30px rgba(37, 49, 61, 0.1);
+}
+
+.tooltip-month { font-weight: 800; color: var(--text); margin-bottom: 5px; }
+.tooltip-row { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); }
+.tooltip-val { color: var(--text); font-weight: 800; }
+
+@media (max-width: 760px) {
+  body { padding: 14px; }
+  .dash { padding: 16px; }
+  .top-bar { align-items: stretch; flex-direction: column; }
+  .currency-toggle { align-self: flex-start; }
+  .metrics-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chart-area { height: 240px; }
+  .chart2-area { height: 220px; }
+  .reset-selection { margin-left: 0; }
+}
+
+@media (max-width: 440px) {
+  .metrics-row { grid-template-columns: 1fr; }
+  .curr-btn { min-width: 66px; }
+}
+</style>
+</head>
+<body>
+
+<div class="dash">
+  <div class="top-bar">
+    <div class="title-block">
+      <span class="title-main">Инвестиционный капитал</span>
+      <span class="title-sub" id="period-label">Январь — Июнь 2026</span>
+    </div>
+    <div class="currency-toggle">
+      <button class="curr-btn active" id="btn-rub" onclick="setCurrency('RUB')">₽ RUB</button>
+      <button class="curr-btn" id="btn-usd" onclick="setCurrency('USD')">$ USD</button>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric">
+      <div class="metric-label">Начало года</div>
+      <div class="metric-value" id="m-start">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Текущий капитал</div>
+      <div class="metric-value" id="m-current">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Абсолютный прирост</div>
+      <div class="metric-value" id="m-abs">—</div>
+      <div class="metric-delta delta-pos" id="m-abs-d"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Доходность YTD</div>
+      <div class="metric-value delta-pos" id="m-yield">—</div>
+    </div>
+  </div>
+
+  <div class="selection-info" id="sel-info" style="display:none">
+    <span class="sel-badge" id="sel-period"></span>
+    <span class="sel-badge" id="sel-return"></span>
+    <span class="sel-badge" id="sel-abs"></span>
+    <button class="reset-selection" type="button" onclick="clearSelection()">Сбросить</button>
+  </div>
+
+  <div class="chart-area">
+    <canvas id="mainChart" role="img" aria-label="График динамики инвестиционного капитала по дням">Данные о росте капитала по дням с января по июнь 2026.</canvas>
+    <div class="tooltip" id="tt1">
+      <div class="tooltip-month" id="tt1-month"></div>
+      <div class="tooltip-row"><span>Стоимость</span><span class="tooltip-val" id="tt1-val"></span></div>
+      <div class="tooltip-row"><span>Доходность</span><span class="tooltip-val" id="tt1-ret"></span></div>
+    </div>
+  </div>
+
+  <div class="timeframe-row" aria-label="Выбор временного фрейма графика капитала">
+    <button class="timeframe-btn active" id="tf-ytd" type="button" onclick="setTimeframe('YTD')">YTD</button>
+    <button class="timeframe-btn" id="tf-m" type="button" onclick="setTimeframe('M')">M</button>
+    <button class="timeframe-btn" id="tf-w" type="button" onclick="setTimeframe('W')">W</button>
+  </div>
+
+  <div class="selection-info" id="no-sel-info">
+    <span class="selection-hint">Нажмите и протяните по графику для выбора любого периода по дням</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="chart2-title">Структура доходности</div>
+  <div class="legend-row">
+    <span class="leg-item"><span class="leg-dot" style="background:#9eb6be"></span>RUB активы</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#9fb1cf"></span>USD активы</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#c56b5a"></span>Комиссия брокера</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#a58758"></span>Курсовая разница</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#25313d; border-radius:2px; width:16px; height:3px; margin-top:2px"></span>Итого</span>
+  </div>
+  <div class="chart2-area">
+    <canvas id="returnsChart" role="img" aria-label="Структура доходности по компонентам помесячно">Разбивка доходности: RUB активы, USD активы, комиссия, курсовая разница, итого.</canvas>
+    <div class="tooltip" id="tt2">
+      <div class="tooltip-month" id="tt2-month"></div>
+      <div class="tooltip-row"><span>RUB активы</span><span class="tooltip-val" id="tt2-rub"></span></div>
+      <div class="tooltip-row"><span>USD активы</span><span class="tooltip-val" id="tt2-usd"></span></div>
+      <div class="tooltip-row"><span>Комиссия</span><span class="tooltip-val" id="tt2-fee"></span></div>
+      <div class="tooltip-row"><span>Курс</span><span class="tooltip-val" id="tt2-fx"></span></div>
+      <div class="tooltip-row" style="margin-top:4px; padding-top:4px; border-top: 1px solid var(--line)"><span style="font-weight:800;color:var(--text)">Итого</span><span class="tooltip-val" id="tt2-total"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'];
+const fullMonths = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь'];
+
+const capitalAnchors = [
+  { date: '2026-01-01', rub: 1820000, usd: 20000 },
+  { date: '2026-02-01', rub: 1878240, usd: 20440 },
+  { date: '2026-03-01', rub: 1952860, usd: 21100 },
+  { date: '2026-04-01', rub: 2058420, usd: 22140 },
+  { date: '2026-05-01', rub: 2034760, usd: 21840 },
+  { date: '2026-06-01', rub: 2125760, usd: 23000 },
+  { date: '2026-06-30', rub: 2243150, usd: 24550 },
+];
+
+function parseDate(value) {
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function dateKey(date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+function shortDate(date) {
+  return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function fullDate(date) {
+  return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
+}
+
+function buildDailyCapital() {
+  const anchors = capitalAnchors.map(item => ({ ...item, parsedDate: parseDate(item.date) }));
+  const anchorByDate = new Map(anchors.map(item => [item.date, item]));
+  const points = [];
+
+  for (let segment = 0; segment < anchors.length - 1; segment++) {
+    const start = anchors[segment];
+    const end = anchors[segment + 1];
+    const days = Math.round((end.parsedDate - start.parsedDate) / 86400000);
+
+    for (let day = 0; day < days; day++) {
+      const date = new Date(start.parsedDate);
+      date.setDate(start.parsedDate.getDate() + day);
+      const key = dateKey(date);
+      if (anchorByDate.has(key) && key !== start.date) continue;
+
+      const progress = day / days;
+      const wave = Math.sin(progress * Math.PI) * Math.sin((points.length + 3) * 0.47);
+      const rub = Math.round(start.rub + (end.rub - start.rub) * progress + wave * 8500);
+      const usd = Math.round(start.usd + (end.usd - start.usd) * progress + wave * 85);
+      points.push({ date, rub, usd, label: shortDate(date), fullLabel: fullDate(date) });
+    }
+  }
+
+  const last = anchors[anchors.length - 1];
+  points.push({ date: last.parsedDate, rub: last.rub, usd: last.usd, label: shortDate(last.parsedDate), fullLabel: fullDate(last.parsedDate) });
+  return points;
+}
+
+const capitalData = buildDailyCapital();
+const dayLabels = capitalData.map(point => point.label);
+const fullDayLabels = capitalData.map(point => point.fullLabel);
+const dataRUB = capitalData.map(point => point.rub);
+const dataUSD = capitalData.map(point => point.usd);
+
+const returnsData = {
+  rub:  [1.9, 2.5, 3.7, -0.6, 3.8, 4.9],
+  usd:  [1.1, 1.5, 2.1, -0.5, 1.9, 2.5],
+  fee:  [-0.3, -0.3, -0.3, -0.3, -0.3, -0.3],
+  fx:   [0.5, 0.4, 0.3, 0.1, -0.4, -0.65],
+};
+returnsData.total = returnsData.rub.map((v,i) => +(v + returnsData.usd[i] + returnsData.fee[i] + returnsData.fx[i]).toFixed(2));
+
+let currency = 'RUB';
+let mainChartInst = null;
+let ret2ChartInst = null;
+let dragStart = null;
+let dragEnd = null;
+let isDragging = false;
+let timeframe = 'YTD';
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function chartColors() {
+  return {
+    text: cssVar('--text'),
+    muted: cssVar('--muted'),
+    line: cssVar('--line'),
+    background: cssVar('--background'),
+    gold: cssVar('--gold'),
+    olive: cssVar('--olive'),
+    stone: cssVar('--stone'),
+    positive: cssVar('--positive'),
+    negative: cssVar('--negative'),
+    fx: cssVar('--fx'),
+  };
+}
+
+function fmt(v) {
+  if (currency === 'RUB') return '₽\u202f' + (v / 1000000).toFixed(2) + '\u202fм';
+  return '$\u202f' + v.toLocaleString('ru-RU');
+}
+
+function fmtPercent(v, digits = 1) {
+  return (v > 0 ? '+' : '') + v.toFixed(digits) + '%';
+}
+
+function getVisibleCapitalData() {
+  if (timeframe === 'M') {
+    return capitalData.filter(point => point.date >= parseDate('2026-03-01'));
+  }
+
+  if (timeframe === 'W') {
+    return capitalData.filter(point => point.date >= parseDate('2026-06-01'));
+  }
+
+  return capitalData;
+}
+
+function getVisibleLabels() {
+  return getVisibleCapitalData().map(point => point.label);
+}
+
+function getVisibleFullLabels() {
+  return getVisibleCapitalData().map(point => point.fullLabel);
+}
+
+function getData() {
+  const key = currency === 'RUB' ? 'rub' : 'usd';
+  return getVisibleCapitalData().map(point => point[key]);
+}
+
+function getFullData() {
+  return currency === 'RUB' ? dataRUB : dataUSD;
+}
+
+function getReturnsData() {
+  const fx = currency === 'RUB' ? returnsData.fx : returnsData.fx.map(v => -v);
+  const total = returnsData.rub.map((v, i) => +(v + returnsData.usd[i] + returnsData.fee[i] + fx[i]).toFixed(2));
+  return { ...returnsData, fx, total };
+}
+
+function getColor(alpha) {
+  const rgb = currency === 'RUB' ? '158,182,190' : '159,177,207';
+  return `rgba(${rgb},${alpha})`;
+}
+
+function updateMetrics(selStart, selEnd) {
+  const d = getFullData();
+  const start = d[0];
+  const cur = d[d.length - 1];
+  const abs = cur - start;
+  const yld = ((cur - start) / start * 100).toFixed(2);
+  document.getElementById('m-start').textContent = fmt(start);
+  document.getElementById('m-current').textContent = fmt(cur);
+  document.getElementById('m-abs').textContent = (abs > 0 ? '+' : '') + fmt(abs);
+  document.getElementById('m-abs-d').textContent = '';
+  document.getElementById('m-yield').textContent = (yld > 0 ? '+' : '') + yld + '%';
+}
+
+function clearSelection() {
+  dragStart = null; dragEnd = null; isDragging = false;
+  document.getElementById('sel-info').style.display = 'none';
+  document.getElementById('no-sel-info').style.display = 'flex';
+  if (mainChartInst) rebuildMainChart();
+}
+
+function showSelection(s, e) {
+  if (s === null || e === null) return;
+  const a = Math.min(s, e), b = Math.max(s, e);
+  const d = getData();
+  const labels = getVisibleFullLabels();
+  const startVal = d[a], endVal = d[b];
+  const ret = ((endVal - startVal) / startVal * 100).toFixed(2);
+  const abs = endVal - startVal;
+  const toneClass = abs >= 0 ? 'is-positive' : 'is-negative';
+  const retEl = document.getElementById('sel-return');
+  const absEl = document.getElementById('sel-abs');
+  document.getElementById('sel-period').textContent = a === b ? labels[a] : labels[a] + ' — ' + labels[b];
+  retEl.textContent = (ret > 0 ? '+' : '') + ret + '% доходность';
+  absEl.textContent = (abs > 0 ? '+' : '') + fmt(abs);
+  retEl.classList.remove('is-positive', 'is-negative');
+  absEl.classList.remove('is-positive', 'is-negative');
+  retEl.classList.add(toneClass);
+  absEl.classList.add(toneClass);
+  document.getElementById('sel-info').style.display = 'flex';
+  document.getElementById('no-sel-info').style.display = 'none';
+}
+
+function buildGradient(ctx, chartArea, color1, color2) {
+  const g = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+  g.addColorStop(0, color1);
+  g.addColorStop(1, color2);
+  return g;
+}
+
+const selectionPlugin = {
+  id: 'selectionPlugin',
+  afterDraw(chart) {
+    if (dragStart === null || dragEnd === null) return;
+    const a = Math.min(dragStart, dragEnd), b = Math.max(dragStart, dragEnd);
+    const {ctx, chartArea, scales} = chart;
+    const xA = scales.x.getPixelForValue(a);
+    const xB = scales.x.getPixelForValue(b);
+    ctx.save();
+    ctx.fillStyle = getColor(0.12);
+    ctx.fillRect(xA, chartArea.top, Math.max(2, xB - xA), chartArea.bottom - chartArea.top);
+    ctx.strokeStyle = getColor(0.5);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(xA, chartArea.top); ctx.lineTo(xA, chartArea.bottom); ctx.stroke();
+    if (a !== b) {
+      ctx.beginPath(); ctx.moveTo(xB, chartArea.top); ctx.lineTo(xB, chartArea.bottom); ctx.stroke();
+    }
+    ctx.restore();
+  }
+};
+
+const totalReturnLabelsPlugin = {
+  id: 'totalReturnLabels',
+  afterDatasetsDraw(chart) {
+    const totalDatasetIndex = chart.data.datasets.findIndex(dataset => dataset.label === 'Итого');
+    if (totalDatasetIndex < 0) return;
+
+    const meta = chart.getDatasetMeta(totalDatasetIndex);
+    const {ctx, chartArea} = chart;
+    const colors = chartColors();
+
+    ctx.save();
+    ctx.font = '800 11px Inter, Arial, Helvetica, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+
+    meta.data.forEach((point, index) => {
+      const value = chart.data.datasets[totalDatasetIndex].data[index];
+      if (typeof value !== 'number') return;
+
+      const x = point.x;
+      const y = Math.max(chartArea.top + 13, point.y - 8);
+      ctx.fillStyle = value >= 0 ? colors.positive : colors.negative;
+      ctx.fillText(fmtPercent(value, 2), x, y);
+    });
+
+    ctx.restore();
+  }
+};
+
+function getIndexFromEvent(chart, e) {
+  const rect = chart.canvas.getBoundingClientRect();
+  const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+  const {scales} = chart;
+  let best = 0, bestDist = Infinity;
+  for (let i = 0; i < chart.data.labels.length; i++) {
+    const px = scales.x.getPixelForValue(i);
+    const d = Math.abs(px - x);
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  return best;
+}
+
+function rebuildMainChart() {
+  const d = getData();
+  const visibleCapitalData = getVisibleCapitalData();
+  const visibleLabels = getVisibleLabels();
+  const visibleFullLabels = getVisibleFullLabels();
+  const mainColor = getColor(1);
+  const colors = chartColors();
+  const canvas = document.getElementById('mainChart');
+  if (mainChartInst) mainChartInst.destroy();
+
+  const selFillPlugin = {
+    id: 'selFill',
+    beforeDraw(chart) {
+      if (dragStart === null || dragEnd === null) return;
+      const a = Math.min(dragStart, dragEnd), b = Math.max(dragStart, dragEnd);
+      if (a === b) return;
+      const {ctx, chartArea, data, scales} = chart;
+      const xA = scales.x.getPixelForValue(a);
+      const xB = scales.x.getPixelForValue(b);
+      const pts = [];
+      for (let i = a; i <= b; i++) {
+        pts.push({x: scales.x.getPixelForValue(i), y: scales.y.getPixelForValue(d[i])});
+      }
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(xA, chartArea.bottom);
+      pts.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(xB, chartArea.bottom);
+      ctx.closePath();
+      ctx.fillStyle = getColor(0.25);
+      ctx.fill();
+      ctx.restore();
+    }
+  };
+
+  mainChartInst = new Chart(canvas, {
+    type: 'line',
+    plugins: [selectionPlugin, selFillPlugin],
+    data: {
+      labels: visibleLabels,
+      datasets: [{
+        label: 'Капитал',
+        data: d,
+        borderColor: mainColor,
+        backgroundColor(context) {
+          const {chart} = context;
+          const {ctx, chartArea} = chart;
+          if (!chartArea) return getColor(0.12);
+          return buildGradient(ctx, chartArea, getColor(0.24), getColor(0.02));
+        },
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHitRadius: 8,
+        pointBackgroundColor: mainColor,
+        pointBorderColor: colors.background,
+        pointBorderWidth: 2,
+        tension: 0.35,
+        fill: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        x: {
+          grid: {
+            color(context) {
+              const point = visibleCapitalData[context.index];
+              if (!point) return 'transparent';
+              return context.index === 0 || point.date.getDate() === 1 ? colors.line : 'transparent';
+            },
+            drawTicks: false
+          },
+          border: { display: false },
+          ticks: {
+            autoSkip: false,
+            maxRotation: 0,
+            font: { size: 11, weight: 700 },
+            color: colors.muted,
+            padding: 8,
+            callback(value, index) {
+              const point = visibleCapitalData[index];
+              if (!point) return '';
+              const isFirstPoint = index === 0;
+              const isFirstDay = point.date.getDate() === 1;
+              return isFirstPoint || isFirstDay ? months[point.date.getMonth()] : '';
+            }
+          }
+        },
+        y: {
+          position: 'right',
+          grid: { color: colors.line, drawTicks: false },
+          border: { display: false },
+          ticks: {
+            font: { size: 11, weight: 700 },
+            color: colors.muted,
+            padding: 6,
+            callback: v => currency === 'RUB' ? '₽' + (v/1000000).toFixed(2) + 'м' : '$' + (v/1000).toFixed(1) + 'k'
+          }
+        }
+      },
+      onHover: null,
+      animation: { duration: 300 }
+    }
+  });
+
+  const cvs = canvas;
+  cvs.onmousemove = e => {
+    const rect = cvs.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const ca = mainChartInst.chartArea;
+    if (mx < ca.left || mx > ca.right || my < ca.top || my > ca.bottom) {
+      document.getElementById('tt1').style.display = 'none';
+      if (isDragging && dragStart !== null) {
+        const idx = getIndexFromEvent(mainChartInst, e);
+        dragEnd = idx;
+        mainChartInst.update('none');
+      }
+      return;
+    }
+    const idx = getIndexFromEvent(mainChartInst, e);
+    const val = getData()[idx];
+    const ret = idx > 0 ? ((val - getData()[0]) / getData()[0] * 100).toFixed(2) : '0.00';
+    const tt = document.getElementById('tt1');
+    document.getElementById('tt1-month').textContent = visibleFullLabels[idx];
+    document.getElementById('tt1-val').textContent = fmt(val);
+    document.getElementById('tt1-ret').textContent = (ret >= 0 ? '+' : '') + ret + '%';
+    const lx = mx + ca.left > (rect.width * 0.6) ? mx - 150 : mx + 12;
+    tt.style.left = lx + 'px';
+    tt.style.top = (my - 20) + 'px';
+    tt.style.display = 'block';
+    if (isDragging && dragStart !== null) {
+      dragEnd = idx;
+      mainChartInst.update('none');
+    }
+  };
+  cvs.onmousedown = e => {
+    const rect = cvs.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const ca = mainChartInst.chartArea;
+    if (mx < ca.left || mx > ca.right || my < ca.top || my > ca.bottom) return;
+    isDragging = true;
+    dragStart = getIndexFromEvent(mainChartInst, e);
+    dragEnd = dragStart;
+    mainChartInst.update('none');
+  };
+  cvs.onmouseup = e => {
+    if (!isDragging) return;
+    isDragging = false;
+    dragEnd = getIndexFromEvent(mainChartInst, e);
+    mainChartInst.update('none');
+    showSelection(dragStart, dragEnd);
+  };
+  cvs.onmouseleave = () => {
+    document.getElementById('tt1').style.display = 'none';
+    if (isDragging) { isDragging = false; mainChartInst.update('none'); showSelection(dragStart, dragEnd); }
+  };
+}
+
+function buildReturnsChart() {
+  const canvas = document.getElementById('returnsChart');
+  const colors = chartColors();
+  const viewReturns = getReturnsData();
+  if (ret2ChartInst) ret2ChartInst.destroy();
+  ret2ChartInst = new Chart(canvas, {
+    type: 'bar',
+    plugins: [totalReturnLabelsPlugin],
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'RUB активы', data: viewReturns.rub, backgroundColor: 'rgba(158,182,190,0.82)', borderRadius: 3, stack: 'pos', borderSkipped: false },
+        { label: 'USD активы', data: viewReturns.usd, backgroundColor: 'rgba(159,177,207,0.86)', borderRadius: 3, stack: 'pos', borderSkipped: false },
+        { label: 'Курсовая разница', data: viewReturns.fx.map(v => v > 0 ? v : 0), backgroundColor: 'rgba(165,135,88,0.78)', borderRadius: 3, stack: 'pos', borderSkipped: false },
+        { label: 'Комиссия', data: viewReturns.fee, backgroundColor: 'rgba(197,107,90,0.78)', borderRadius: 3, stack: 'neg', borderSkipped: false },
+        { label: 'Курс (отриц)', data: viewReturns.fx.map(v => v < 0 ? v : 0), backgroundColor: 'rgba(165,135,88,0.46)', borderRadius: 3, stack: 'neg', borderSkipped: false },
+        { label: 'Итого', data: viewReturns.total, type: 'line', borderColor: colors.text, borderWidth: 1.6, pointRadius: 3, pointBackgroundColor: colors.text, pointBorderColor: colors.background, pointBorderWidth: 1.5, tension: 0.3, fill: false, borderDash: [4,3] }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false, drawTicks: false },
+          border: { display: false },
+          ticks: { font: { size: 11, weight: 700 }, color: colors.muted, padding: 6 }
+        },
+        y: {
+          stacked: true,
+          position: 'right',
+          grid: { color: colors.line, drawTicks: false },
+          border: { display: false },
+          ticks: { font: { size: 11, weight: 700 }, color: colors.muted, padding: 6, callback: v => v + '%' }
+        }
+      },
+      animation: { duration: 300 }
+    }
+  });
+
+  canvas.onmousemove = e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const ca = ret2ChartInst.chartArea;
+    if (mx < ca.left || mx > ca.right || my < ca.top || my > ca.bottom) {
+      document.getElementById('tt2').style.display = 'none'; return;
+    }
+    const idx = getIndexFromEvent(ret2ChartInst, e);
+    document.getElementById('tt2-month').textContent = fullMonths[idx];
+    document.getElementById('tt2-rub').textContent = fmtPercent(viewReturns.rub[idx]);
+    document.getElementById('tt2-usd').textContent = fmtPercent(viewReturns.usd[idx]);
+    document.getElementById('tt2-fee').textContent = fmtPercent(viewReturns.fee[idx]);
+    document.getElementById('tt2-fx').textContent = fmtPercent(viewReturns.fx[idx]);
+    const tot = viewReturns.total[idx];
+    const totEl = document.getElementById('tt2-total');
+    totEl.textContent = fmtPercent(tot, 2);
+    totEl.style.color = tot >= 0 ? colors.positive : colors.negative;
+    const tt = document.getElementById('tt2');
+    const lx = mx + ca.left > (rect.width * 0.6) ? mx - 155 : mx + 12;
+    tt.style.left = lx + 'px';
+    tt.style.top = (my - 30) + 'px';
+    tt.style.display = 'block';
+  };
+  canvas.onmouseleave = () => { document.getElementById('tt2').style.display = 'none'; };
+}
+
+function setTimeframe(nextTimeframe) {
+  timeframe = nextTimeframe;
+  document.getElementById('tf-ytd').classList.toggle('active', nextTimeframe === 'YTD');
+  document.getElementById('tf-m').classList.toggle('active', nextTimeframe === 'M');
+  document.getElementById('tf-w').classList.toggle('active', nextTimeframe === 'W');
+  clearSelection();
+  rebuildMainChart();
+}
+
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('btn-rub').classList.toggle('active', c === 'RUB');
+  document.getElementById('btn-usd').classList.toggle('active', c === 'USD');
+  dragStart = null; dragEnd = null;
+  document.getElementById('sel-info').style.display = 'none';
+  document.getElementById('no-sel-info').style.display = 'flex';
+  updateMetrics();
+  rebuildMainChart();
+  buildReturnsChart();
+}
+
+updateMetrics();
+rebuildMainChart();
+buildReturnsChart();
+</script>
+</body>
+</html>
